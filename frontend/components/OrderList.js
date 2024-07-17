@@ -1,17 +1,22 @@
 import React from 'react'
+import { useGetOrdersQuery } from '../state/ordersApi';
 
 export default function OrderList() {
-  const orders = []
+  const { data = [], error, isloading } = useGetOrdersQuery();
+  if (isloading) return <div>Loading...</div>
+  if (error) return <div>Error: {error.message}</div>
+  
   return (
     <div id="orderList">
       <h2>Pizza Orders</h2>
       <ol>
         {
-          orders.map(() => {
+          data.map((order) => {
             return (
-              <li key={1}>
+              <li key={order.id}>
                 <div>
-                  order details here
+                  {/* order details here */}
+                  <h3></h3>
                 </div>
               </li>
             )
