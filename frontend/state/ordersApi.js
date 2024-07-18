@@ -13,7 +13,7 @@ export const ordersApi = createApi({
             query: (formData) => ({
                 url: 'order',
                 method: 'POST',
-                body: formData
+                body: JSON.stringify(formData)
             })
         })
     }),

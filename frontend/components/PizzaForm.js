@@ -8,12 +8,30 @@ export default function PizzaForm() {
   const dispatch = useDispatch();
   const [submitForm, { isLoading }] = useSubmitFormMutation();
   const { fullName, size, toppings, submitStatus } = useSelector(state => 
-    state.PizzaForm)
+    state.PizzaForm);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     const formData = new FormData(event.target);
-    const result = await submitForm(formData);
+
+    const formObject = Object.fromEntries(formData.entries());
+
+    formObject.toppings = Object.keys(formObject).filter(key =>
+      formObject[key] === 'on'
+    );
+
+    if (!formObject.fullName === '' || !formObject.size === '') {
+      dispatch(setSubmitStatus('failed'));
+      return;
+    }
+
+    const payload = {
+      fullName: formObject.fullName,
+      size: formObject.size,
+      toppings: formObject.toppings,
+    };
+
+    const result = await submitForm(payload);
 
     if(result.error) {
       console.error(result.error);
@@ -39,6 +57,7 @@ export default function PizzaForm() {
             name="fullName"
             placeholder="Type full name"
             type="text"
+            value={fullName}
             onChange={(e) => dispatch(setFullName(e.target.value))}
           />
         </div>
@@ -59,24 +78,24 @@ export default function PizzaForm() {
 
       <div className="input-group">
         <label>
-          <input data-testid="checkPepperoni" name="1" type="checkbox" 
-          onChange={(e) => dispatch(setTopping({value: e.target.checked}))}/>
+          <input data-testid="checkPepperoni" name="1" type="checkbox" checked={toppings['1']} 
+          onChange={(e) => dispatch(setTopping({toppingName: '1', value: e.target.checked}))}/>
           Pepperoni<br /></label>
         <label>
-          <input data-testid="checkGreenpeppers" name="2" type="checkbox" 
-          onChange={(e) => dispatch(setTopping({value: e.target.checked}))}/>
+          <input data-testid="checkGreenpeppers" name="2" type="checkbox" checked={toppings['2']}
+          onChange={(e) => dispatch(setTopping({toppingName: '2', value: e.target.checked}))}/>
           Green Peppers<br /></label>
         <label>
-          <input data-testid="checkPineapple" name="3" type="checkbox" 
-          onChange={(e) => dispatch(setTopping({value: e.target.checked}))}/>
+          <input data-testid="checkPineapple" name="3" type="checkbox" checked={toppings['3']}
+          onChange={(e) => dispatch(setTopping({toppingName: '3', value: e.target.checked}))}/>
           Pineapple<br /></label>
         <label>
-          <input data-testid="checkMushrooms" name="4" type="checkbox" 
-          onChange={(e) => dispatch(setTopping({value: e.target.checked}))}/>
+          <input data-testid="checkMushrooms" name="4" type="checkbox" checked={toppings['4']}
+          onChange={(e) => dispatch(setTopping({toppingName: '4', value: e.target.checked}))}/>
           Mushrooms<br /></label>
         <label>
-          <input data-testid="checkHam" name="5" type="checkbox" 
-          onChange={(e) => dispatch(setTopping({value: e.target.checked}))}/>
+          <input data-testid="checkHam" name="5" type="checkbox" checked={toppings['5']}
+          onChange={(e) => dispatch(setTopping({toppingName: '5', value: e.target.checked}))}/>
           Ham<br /></label>
       </div>
       <input data-testid="submit" type="submit" disabled={isLoading} />
