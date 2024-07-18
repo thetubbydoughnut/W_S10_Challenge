@@ -7,7 +7,7 @@ export const ordersApi = createApi({
     baseQuery: fetchBaseQuery({ baseUrl: defaultUrl}),
     endpoints: (builder) => ({
         getOrders: builder.query({
-            query: () => '/history',
+            query: () => 'history',
         }),
     }),
 });
