@@ -1,6 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit'
 import { ordersApi } from './ordersApi'
 import { ordersSlice } from './ordersSlice'
+import pizzaFormReducer from '../state/formSlice'
 
 const exampleReducer = (state = { count: 0 }) => {
   return state
@@ -12,6 +13,7 @@ export const resetStore = () => configureStore({
     // add your reducer(s) here
     orders: ordersSlice.reducer,
     [ordersApi.reducerPath]: ordersApi.reducer,
+    PizzaForm: pizzaFormReducer,
 
   },
   middleware: getDefault => getDefault().concat(

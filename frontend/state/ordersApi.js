@@ -9,7 +9,14 @@ export const ordersApi = createApi({
         getOrders: builder.query({
             query: () => 'history',
         }),
+        submitForm: builder.mutation({
+            query: (formData) => ({
+                url: 'order',
+                method: 'POST',
+                body: formData
+            })
+        })
     }),
 });
 
-export const { useGetOrdersQuery } = ordersApi;
+export const { useGetOrdersQuery, useSubmitFormMutation } = ordersApi;

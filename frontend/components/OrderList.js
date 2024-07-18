@@ -45,7 +45,7 @@ export default function OrderList() {
         Filter by size:
         {
           ['All', 'S', 'M', 'L'].map(size => {
-            const className = `button-filter${size === filter ? ' active' : ''}`
+            const className = `button-filter${size.toUpperCase() === filter ? ' active' : ''}`
             return <button
               data-testid={`filterBtn${size}`}
               onClick={() => dispatch(setFilter(filters[size.toUpperCase()]))}
