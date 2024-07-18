@@ -16,14 +16,32 @@ export default function PizzaForm() {
 
     const formObject = Object.fromEntries(formData.entries());
 
-    formObject.toppings = Object.keys(formObject).filter(key =>
-      formObject[key] === 'on'
-    );
+    if (formObject.toppings) {
+      formObject.toppings = Object.keys(formObject.toppings).filter(key =>
+        formObject.toppings[key] === 'true'
+      );
+    } else {
+      formObject.toppings = [];
+    }
 
-    if (!formObject.fullName === '' || !formObject.size === '') {
+
+    console.log('formObject: ', formObject)
+
+    if (!formObject.fullName || formObject.fullName.length < 3 ||
+      formObject.fullName.length > 20
+    ) {
       dispatch(setSubmitStatus('failed'));
       return;
     }
+
+    if (!formObject.size || !['S', 'M', 'L'].includes(formObject.size)) {
+      dispatch(setSubmitStatus('failed'));
+      console.error('size is required.');
+      return;
+    }
+
+
+    console.log(fullName, size, toppings)
 
     const payload = {
       fullName: formObject.fullName,
@@ -31,7 +49,10 @@ export default function PizzaForm() {
       toppings: formObject.toppings,
     };
 
-    const result = await submitForm(payload);
+
+    console.log('payload: ', payload)
+
+    const result = await submitForm(JSON.stringify(payload));
 
     if(result.error) {
       console.error(result.error);
