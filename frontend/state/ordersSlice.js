@@ -10,7 +10,12 @@ const selectOrders = state => {
 
 export const selectFilteredOrders = createSelector(
     [selectOrders, (state, size) => size],
-    (orders, size) => orders.filter(order => order.size === size)
+    (orders, size) => {
+        if(size === filters.ALL) {
+        return orders;
+    } 
+    orders.filter(order => order.size === size);
+}
 )
 
 
@@ -26,6 +31,9 @@ const initialState = {
     size: '',
     toppings: [],
     filterBy: filters.ALL,
+    loading: false,
+    error: null,
+    orders: []
 }
 
 
@@ -36,8 +44,19 @@ export const ordersSlice = createSlice({
     reducers: {
         setFilter(state, action) {
             state.filterBy = action.payload;
+        },
+        startLoading: (state) => {
+            state.loading = true
+        },
+        hasError: (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+        },
+        getOrderSuccess: (state, action) => {
+            state.loading = false;
+            state.orders = action.payload;
         }
     }
 });
 
-export const { setFilter } = ordersSlice.actions
+export const { setFilter, getOrderSuccess } = ordersSlice.actions

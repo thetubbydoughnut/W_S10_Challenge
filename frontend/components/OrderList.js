@@ -1,28 +1,32 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useGetOrdersQuery } from '../state/ordersApi';
-import { setFilter, filters, selectFilteredOrders } from '../state/ordersSlice';
+import { setFilter, filters, getOrderSuccess, selectFilteredOrders } from '../state/ordersSlice';
 import { useDispatch, useSelector } from 'react-redux';
 
 export default function OrderList() {
   const dispatch = useDispatch();
+  const { data: ordersApiData, error, isloading } = useGetOrdersQuery(undefined, {
+    onSuccess: (data) => {
+      dispatch(getOrderSuccess(data));
+    },
+  });
   const filter = useSelector(state => state.orders.filterBy);
-  const { data, error, isloading } = useGetOrdersQuery();
+  const orders = useSelector(state => selectFilteredOrders(state, filter))
 
-  console.log("API Response: ", data)
-
-  const orders = useSelector(state => 
-    selectFilteredOrders(state, state.orders.filterBy));
+  useEffect(() => {
+    console.log("API Response: ", ordersApiData)
+  }, [ordersApiData])
 
     console.log('Filter: ', filter)
     console.log('Filtered Orders: ', orders)
 
-  const filteredOrders = data ? data.filter(orders => filter === 'ALL' 
-    || orders.size.toUpperCase() === filter) 
+  const filteredOrders = orders ? orders.filter(order => filter === 'ALL' 
+    || order.size.toUpperCase() === filter) 
     : [];
 
   if (isloading) return <div>Loading...</div>
   if (error) return <div>Error: {error.message}</div>
-  if (!data) return <div> No data available</div>
+  if (!ordersApiData) return <div> No data available</div>
 
   return (
     <div id="orderList">
@@ -30,11 +34,13 @@ export default function OrderList() {
       <ol>
         {
           filteredOrders.map((order) => {
+            const toppings = order.toppings || [];
             return (
               <li key={order.id}>
                 <div>
                   {/* order details here */}
-                  {order.customer} ordered a size {order.size} with {order.toppings ? order.toppings.length : 'no'} topping{order.toppings && order.toppings.length == 1 ? '' : 's'}
+                  {order.customer} ordered a size {order.size} with {toppings > 0 ? toppings.length : 'no'} topping
+                  {toppings && toppings.length == 1 ? '' : 's'}
                 </div>
               </li>
             )
@@ -50,7 +56,8 @@ export default function OrderList() {
               data-testid={`filterBtn${size}`}
               onClick={() => dispatch(setFilter(filters[size.toUpperCase()]))}
               className={className}
-              key={size}>{size}</button>
+              key={size}
+              disabled={!ordersApiData}>{size}</button>
           })
         }
       </div>
