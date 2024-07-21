@@ -52,7 +52,7 @@ export default function PizzaForm() {
 
     console.log('payload: ', payload)
 
-    const result = await submitForm(JSON.stringify(payload));
+    const result = await submitForm(payload);
 
     if(result.error) {
       console.error(result.error);

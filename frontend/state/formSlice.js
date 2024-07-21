@@ -21,6 +21,7 @@ const pizzaFormSLice = createSlice({
             state.fullName = action.payload;
         },
         setSize(state, action) {
+            console.log('set size action payload: ', action.payload)
             state.size = action.payload;
         },
         setTopping(state, action) {

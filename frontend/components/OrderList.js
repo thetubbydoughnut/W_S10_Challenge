@@ -34,7 +34,7 @@ export default function OrderList() {
               <li key={order.id}>
                 <div>
                   {/* order details here */}
-                  {order.customer} ordered a size {order.size} with {order.toppings.length} topping{order.toppings.length ? 's' : ''}
+                  {order.customer} ordered a size {order.size} with {order.toppings ? order.toppings.length : 'no'} topping{order.toppings && order.toppings.length == 1 ? '' : 's'}
                 </div>
               </li>
             )
