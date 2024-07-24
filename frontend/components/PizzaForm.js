@@ -3,72 +3,88 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useSubmitFormMutation } from '../state/ordersApi'
 import { setFullName, setSize, setTopping, setSubmitStatus } from 
 '../state/formSlice';
+import { setErrorMessage } from '../state/ordersSlice';
 
 export default function PizzaForm() {
   const dispatch = useDispatch();
   const [submitForm, { isLoading }] = useSubmitFormMutation();
-  const { fullName, size, toppings, submitStatus } = useSelector(state => 
+  const { fullName, size, toppings} = useSelector(state => 
     state.PizzaForm);
+  const errorMessage = useSelector(state => state.orders.errorMessage)  
+    
+    const handleSubmit = async (event) => {
+      event.preventDefault();
+      const formData = new FormData(event.target);
+      
+      if (!formData.fullName) {
+        dispatch(setErrorMessage('Order failed: fullName is required'));
+        return;
+      }
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    const formData = new FormData(event.target);
+      if (!formData.size) {
+        dispatch(setErrorMessage("Order failed: size must be one of the following values: S, M, L"));
+        return;
+      }
 
-    const formObject = Object.fromEntries(formData.entries());
+      const formObject = Object.fromEntries(formData.entries());
+      
+      if (formObject.toppings) {
+        formObject.toppings = Object.keys(formObject.toppings).filter(key =>
+          formObject.toppings[key] === 'true'
+        );
+      } else {
+        formObject.toppings = [];
+      }
+      
+      
+      console.log('formObject: ', formObject)
+      
+      if (!formObject.fullName || formObject.fullName.length < 3 ||
+        formObject.fullName.length > 20
+      ) {
+        dispatch(setSubmitStatus('failed'));
+        return;
+      }
+      
+      if (!formObject.size || !['S', 'M', 'L'].includes(formObject.size)) {
+        dispatch(setSubmitStatus('failed'));
+        console.error('size is required.');
+        return;
+      }
+      
+      console.log(fullName, size, toppings)
+      
+      const payload = {
+        fullName: formObject.fullName,
+        size: formObject.size,
+        toppings: formObject.toppings,
+      };
+      
+      console.log('payload: ', payload)
+      
+      const result = await submitForm(payload);
+      
+      if(result.error) {
+        console.error(result.error);
+        dispatch(setSubmitStatus('failed'));
+      } else {
+        console.log('result data: ', result.data)
+        dispatch(setSubmitStatus('idle'));
+      }
+      
 
-    if (formObject.toppings) {
-      formObject.toppings = Object.keys(formObject.toppings).filter(key =>
-        formObject.toppings[key] === 'true'
-      );
-    } else {
-      formObject.toppings = [];
+      try {
+        await submitForm(formData).unwrap();
+      } catch (error) {
+        console.error('Failed to submit order: ', error)
+      }
     }
-
-
-    console.log('formObject: ', formObject)
-
-    if (!formObject.fullName || formObject.fullName.length < 3 ||
-      formObject.fullName.length > 20
-    ) {
-      dispatch(setSubmitStatus('failed'));
-      return;
-    }
-
-    if (!formObject.size || !['S', 'M', 'L'].includes(formObject.size)) {
-      dispatch(setSubmitStatus('failed'));
-      console.error('size is required.');
-      return;
-    }
-
-
-    console.log(fullName, size, toppings)
-
-    const payload = {
-      fullName: formObject.fullName,
-      size: formObject.size,
-      toppings: formObject.toppings,
-    };
-
-
-    console.log('payload: ', payload)
-
-    const result = await submitForm(payload);
-
-    if(result.error) {
-      console.error(result.error);
-      dispatch(setSubmitStatus('failed'));
-    } else {
-      console.log('result data: ', result.data)
-      dispatch(setSubmitStatus('idle'));
-    }
-  }
-
-  return (
-    <form onSubmit={handleSubmit}>
+    
+    return (
+      <form onSubmit={handleSubmit}>
       <h2>Pizza Form</h2>
-      {submitStatus === 'pending' && <div className='pending'>Order in progress...</div>}
-      {submitStatus === 'failed' && <div className='failure'>Order failed: fullName is required</div>}
-
+      {isLoading && <div className='pending'>Order in progress...</div>}
+      {errorMessage && <div data-testid='validationMessage' className='failure'>{errorMessage}</div>}
       <div className="input-group">
         <div>
           <label htmlFor="fullName">Full Name</label><br />

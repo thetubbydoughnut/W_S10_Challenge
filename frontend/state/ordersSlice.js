@@ -14,7 +14,7 @@ export const selectFilteredOrders = createSelector(
         if(size === filters.ALL) {
         return orders;
     } 
-    orders.filter(order => order.size === size);
+    return orders.filter(order => order.size === size);
 }
 )
 
@@ -33,7 +33,8 @@ const initialState = {
     filterBy: filters.ALL,
     loading: false,
     error: null,
-    orders: []
+    orders: [],
+    errorMessage: '',
 }
 
 
@@ -55,8 +56,11 @@ export const ordersSlice = createSlice({
         getOrderSuccess: (state, action) => {
             state.loading = false;
             state.orders = action.payload;
+        },
+        setErrorMessage: (state, action) => {
+            state.errorMessage = action.payload;
         }
     }
 });
 
-export const { setFilter, getOrderSuccess } = ordersSlice.actions
+export const { setFilter, getOrderSuccess, setErrorMessage } = ordersSlice.actions

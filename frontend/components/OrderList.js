@@ -35,12 +35,14 @@ export default function OrderList() {
         {
           filteredOrders.map((order) => {
             const toppings = order.toppings || [];
+            const toppingsText = toppings.length > 0 ? toppings.length : 'no';
+            console.log('order: ', order)
             return (
               <li key={order.id}>
                 <div>
                   {/* order details here */}
-                  {order.customer} ordered a size {order.size} with {toppings > 0 ? toppings.length : 'no'} topping
-                  {toppings && toppings.length == 1 ? '' : 's'}
+                  {order.customer} ordered a size {order.size} with {toppingsText} topping
+                  {toppingsText === 'no' && toppingsText == 1 ? '' : 's'}
                 </div>
               </li>
             )
@@ -57,7 +59,7 @@ export default function OrderList() {
               onClick={() => dispatch(setFilter(filters[size.toUpperCase()]))}
               className={className}
               key={size}
-              disabled={!ordersApiData}>{size}</button>
+              >{size}</button>
           })
         }
       </div>
