@@ -14,7 +14,15 @@ export default function PizzaForm() {
     
     const handleSubmit = async (event) => {
       event.preventDefault();
-      const formData = new FormData(event.target);
+      
+      console.log('event on submit: ', event)
+
+      const formData = {
+        fullName,
+        size,toppings: Object.keys(toppings).filter(key  => toppings[key] === true)
+      };
+
+      console.log('formdata: ', formData);
       
       if (!formData.fullName) {
         dispatch(setErrorMessage('Order failed: fullName is required'));
@@ -25,28 +33,15 @@ export default function PizzaForm() {
         dispatch(setErrorMessage("Order failed: size must be one of the following values: S, M, L"));
         return;
       }
-
-      const formObject = Object.fromEntries(formData.entries());
       
-      if (formObject.toppings) {
-        formObject.toppings = Object.keys(formObject.toppings).filter(key =>
-          formObject.toppings[key] === 'true'
-        );
-      } else {
-        formObject.toppings = [];
-      }
-      
-      
-      console.log('formObject: ', formObject)
-      
-      if (!formObject.fullName || formObject.fullName.length < 3 ||
-        formObject.fullName.length > 20
+      if (!formData.fullName || formData.fullName.length < 3 ||
+        formData.fullName.length > 20
       ) {
         dispatch(setSubmitStatus('failed'));
         return;
       }
       
-      if (!formObject.size || !['S', 'M', 'L'].includes(formObject.size)) {
+      if (!formData.size || !['S', 'M', 'L'].includes(formData.size)) {
         dispatch(setSubmitStatus('failed'));
         console.error('size is required.');
         return;
@@ -55,22 +50,22 @@ export default function PizzaForm() {
       console.log(fullName, size, toppings)
       
       const payload = {
-        fullName: formObject.fullName,
-        size: formObject.size,
-        toppings: formObject.toppings,
+        fullName: formData.fullName,
+        size: formData.size,
+        toppings: formData.toppings,
       };
       
       console.log('payload: ', payload)
       
-      const result = await submitForm(payload);
+      // const result = await submitForm(payload);
       
-      if(result.error) {
-        console.error(result.error);
-        dispatch(setSubmitStatus('failed'));
-      } else {
-        console.log('result data: ', result.data)
-        dispatch(setSubmitStatus('idle'));
-      }
+      // if(result.error) {
+      //   console.error(result.error);
+      //   dispatch(setSubmitStatus('failed'));
+      // } else {
+      //   console.log('result data: ', result.data)
+      //   dispatch(setSubmitStatus('idle'));
+      // }
       
 
       try {

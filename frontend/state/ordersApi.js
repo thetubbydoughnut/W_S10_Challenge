@@ -8,6 +8,7 @@ export const ordersApi = createApi({
     endpoints: (builder) => ({
         getOrders: builder.query({
             query: () => 'history',
+            providesTags: ['Orders']
         }),
         submitForm: builder.mutation({
             query: (formData) => ({
@@ -17,7 +18,8 @@ export const ordersApi = createApi({
                 headers: {
                     'Content-Type': 'application/json',
                 }
-            })
+            }),
+            invalidatesTags: ['Orders']
         }),
         
     }),
