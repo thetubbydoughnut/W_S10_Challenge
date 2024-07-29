@@ -63,4 +63,4 @@ export const ordersSlice = createSlice({
     }
 });
 
-export const { setFilter, getOrderSuccess, setErrorMessage } = ordersSlice.actions
+export const { setFilter, getOrderSuccess, setErrorMessage, startLoading, hasError } = ordersSlice.actions

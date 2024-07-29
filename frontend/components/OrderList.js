@@ -1,33 +1,32 @@
 import React from 'react'
 import { useGetOrdersQuery } from '../state/ordersApi';
-import { setFilter, filters, getOrderSuccess, selectFilteredOrders } from '../state/ordersSlice';
+import { setFilter, filters, getOrderSuccess, selectFilteredOrders, startLoading, hasError } from '../state/ordersSlice';
 import { useDispatch, useSelector } from 'react-redux';
 
 export default function OrderList() {
   const dispatch = useDispatch();
   const queryResult = useGetOrdersQuery(undefined, {
+    onStarted: () => {
+      dispatch(startLoading());
+    },
     onSuccess: (data) => {
       dispatch(getOrderSuccess(data));
+    },
+    onError: (error) => {
+      dispatch(hasError(error));
     },
   });
   console.log('queryResult: ', queryResult)
   const filter = useSelector(state => state.orders.filterBy);
-  const orders = useSelector(state => selectFilteredOrders(state, filter))
-
-  // useEffect(() => {
-  //   console.log("API Response: ", ordersApiData)
-  // }, [ordersApiData])
-
+  const orders = useSelector(state => selectFilteredOrders(state, filter));
+  
+  
     console.log('Filter: ', filter)
     console.log('Filtered Orders: ', orders)
 
   const filteredOrders = orders ? orders.filter(order => filter === 'ALL' 
     || order.size.toUpperCase() === filter) 
     : [];
-
-  // if (isloading) return <div>Loading...</div>
-  // if (error) return <div>Error: {error.message}</div>
-  // if (!ordersApiData) return <div> No data available</div>
 
   return (
     <div id="orderList">
