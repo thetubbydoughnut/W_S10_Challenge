@@ -1,17 +1,18 @@
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { useSubmitFormMutation } from '../state/ordersApi'
-import { setFullName, setSize, setTopping, setSubmitStatus } from 
+import { setFullName, setSize, setTopping, setSubmitStatus, resetForm } from 
 '../state/formSlice';
 import { setErrorMessage } from '../state/ordersSlice';
 
 export default function PizzaForm() {
   const dispatch = useDispatch();
   const [submitForm, { isLoading }] = useSubmitFormMutation();
-  const { fullName, size, toppings} = useSelector(state => 
+  console.log("", isLoading)
+  const { fullName, size, toppings, submitStatus} = useSelector(state => 
     state.PizzaForm);
   const errorMessage = useSelector(state => state.orders.errorMessage)  
-    
+    console.log(submitStatus)
     const handleSubmit = async (event) => {
       event.preventDefault();
       
@@ -19,7 +20,8 @@ export default function PizzaForm() {
 
       const formData = {
         fullName,
-        size,toppings: Object.keys(toppings).filter(key  => toppings[key] === true)
+        size,
+        toppings: Object.keys(toppings).filter(key  => toppings[key] === true)
       };
 
       console.log('formdata: ', formData);
@@ -72,6 +74,8 @@ export default function PizzaForm() {
         await submitForm(formData).unwrap();
       } catch (error) {
         console.error('Failed to submit order: ', error)
+      } finally {
+        dispatch(resetForm())
       }
     }
     

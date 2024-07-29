@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit"
 
-const initialFormState = {
+export const initialFormState = {
     fullName: '',
     size: '',
     toppings: {
@@ -31,10 +31,14 @@ const pizzaFormSLice = createSlice({
         setSubmitStatus(state, action) {
             state.submitStatus = action.payload;
         },
+        resetForm(state) {
+            return initialFormState
+        },
+        
     }
 });
 
-export const { setFullName, setSize, setTopping, setSubmitStatus } 
+export const { setFullName, setSize, setTopping, setSubmitStatus, resetForm } 
 = pizzaFormSLice.actions;
 
 export default pizzaFormSLice.reducer;

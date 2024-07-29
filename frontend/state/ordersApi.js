@@ -6,6 +6,7 @@ export const ordersApi = createApi({
     reducerPath: 'ordersApi',
     baseQuery: fetchBaseQuery({ baseUrl: defaultUrl}),
     endpoints: (builder) => ({
+        tagTypes: ['Orders'],
         getOrders: builder.query({
             query: () => 'history',
             providesTags: ['Orders']
@@ -21,7 +22,6 @@ export const ordersApi = createApi({
             }),
             invalidatesTags: ['Orders']
         }),
-        
     }),
 });
 
